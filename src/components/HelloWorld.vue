@@ -47,6 +47,7 @@ setTimeout(() => {
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
 
+  // 增加一个球体，包裹上面的立方体
   const geometry1 = new THREE.SphereGeometry(1, 32, 16);
   const material1 = new THREE.MeshBasicMaterial({ color: 0x42b983, wireframe: true });
   const sphere = new THREE.Mesh(geometry1, material1);
