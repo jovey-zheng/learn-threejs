@@ -1,7 +1,11 @@
 <template>
   <div id="model"></div>
+
+  <!-- 纹理图案，隐藏无需展示，只做数据获取 -->
   <div id="svgTextContainer" class="hide"></div>
   <div id="svgPathContainer" class="hide"></div>
+
+  <!-- 颜色选择器 -->
   <div id="picker"></div>
 </template>
 
@@ -23,6 +27,7 @@ export default defineComponent({
     const camera = new THREE.PerspectiveCamera(30, width / height, 100, 1200);
     camera.position.set(500, 0, 0);
     scene.add(camera);
+    // 添加轨道控制器，支持 360° 查看
     const controls = new OrbitControls(camera, container);
     controls.minDistance = 200;
     controls.maxDistance = 700;
@@ -110,14 +115,17 @@ export default defineComponent({
     const pathSvg = document
       .getElementById("svgPathContainer")
       .querySelector("svg");
+    // 将 dom 序列化为 string
     const svgData = new XMLSerializer().serializeToString(pathSvg);
     // 文字样式
     const textSvg = document
       .getElementById("svgTextContainer")
       .querySelector("svg");
+    // 将 dom 序列化为 string
     const svgTextData = new XMLSerializer().serializeToString(textSvg);
 
     // 创建新纹理，取 svg 的宽高
+    // 纹理的样式需要一定的比例才能覆盖整个模型，纹理内的图标有特殊位置要求
     const canvas = document.createElement("canvas");
     canvas.width = pathSvg.width.baseVal.value;
     canvas.height = pathSvg.height.baseVal.value;
@@ -146,6 +154,7 @@ export default defineComponent({
         // 样式图案
         ctx.globalAlpha = 0.4;
         ctx.scale(0.3, 0.3);
+        // 创建花样，重复这个图片（底图）
         const pattern = ctx.createPattern(patternImg, "repeat");
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, canvas.width * 3.33, canvas.height * 3.33);
@@ -174,12 +183,16 @@ export default defineComponent({
 
     // 加载一个模型
     function loadModal(textureMaterial) {
+      // 模型 loading 管理器，可以监听模型加载的进度（可选）
       const manager = new THREE.LoadingManager();
       const loader = new THREE.OBJLoader2(manager);
+      // 加载模型文件
       loader.load("model.obj", function (data) {
+        // 避免重复载入模型
         if (object != null) {
           scene.remove(object);
         }
+        // 模型的具体数据对象（可以 console data 相关信息）
         object = data.detail.loaderRootNode;
 
         // 覆盖模型的材质纹理
@@ -190,12 +203,16 @@ export default defineComponent({
           }
         });
 
+        // 缩放模型
         const scale = height / 3;
         object.scale.set(scale, scale, scale);
+        // 模型位置信息
         object.position.set(0, -scale * 1.4, 0);
         object.rotation.set(0, Math.PI / 2, 0);
+        // 阴影
         object.receiveShadow = true;
         object.castShadow = true;
+        // 模型放入场景中
         scene.add(object);
       });
     }
