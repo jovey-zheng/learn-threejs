@@ -6,16 +6,36 @@
   <div id="svgPathContainer" class="hide"></div>
 
   <!-- 颜色选择器 -->
-  <div id="picker"></div>
+  <div id="picker">
+    <div
+      v-for="c in colors"
+      class="color"
+      :title="c"
+      :key="c"
+      :style="{ background: c }"
+      @click="changeColor(c)"
+    ></div>
+    <p>pick: {{ color }}</p>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, reactive, watchEffect } from "vue";
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { useColor } from "../hooks/colors";
 
 export default defineComponent({
-  setup() {},
+  name: "Model",
+  setup() {
+    const [colors, color, changeColor] = useColor();
+
+    return {
+      color,
+      colors,
+      changeColor,
+    };
+  },
   async mounted() {
     let object;
     const width = window.innerWidth;
@@ -244,6 +264,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#model {
+  background-color: #b2d3f1;
+}
+
 .hide {
   display: none;
 }
@@ -252,6 +276,17 @@ export default defineComponent({
   position: fixed;
   top: 20px;
   left: 20px;
-  width: 120px;
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 4px;
+  box-shadow: 0 0 2px #1b1b1b;
+  cursor: pointer;
 }
 </style>
