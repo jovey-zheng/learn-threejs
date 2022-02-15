@@ -81,8 +81,8 @@ export default defineComponent({
   name: "Model",
   setup() {
     let object;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     // 创建一个场景
     const scene = new THREE.Scene();
     // 默认配色方案
@@ -237,8 +237,8 @@ export default defineComponent({
         const el = document.getElementById(selectedMaterial.value);
 
         textVal.value = el.innerHTML;
-        textFontSize.value = el.attributes["font-size"].value
-        font.value = el.attributes["font-family"].value
+        textFontSize.value = el.attributes["font-size"].value;
+        font.value = el.attributes["font-family"].value;
       }
     });
 
@@ -372,6 +372,21 @@ export default defineComponent({
       renderer.gammaOutput = true;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.soft = true;
+
+      window.addEventListener("resize", () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        // 当视窗宽度小于高度时，则以正方形的方式缩放
+        // if (width < height) {
+        //   height = width;
+        // }
+        // 镜头要跟随移动
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+      });
 
       function render() {
         renderer.render(scene, camera);
