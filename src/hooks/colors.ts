@@ -80,8 +80,8 @@ export const colors: string[] = [
 ];
 
 // color hooks
-export function useColor() {
-  const color = ref(colors[0]);
+export default function useColor() {
+  const color = ref("");
 
   function changeColor(c: string) {
     color.value = c;

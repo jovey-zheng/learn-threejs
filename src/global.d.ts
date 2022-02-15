@@ -1,6 +1,6 @@
 declare global {
     interface Window {
-        test: string;
+        THREE: string;
     }
 }
 
