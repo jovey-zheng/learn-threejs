@@ -20,7 +20,25 @@
 
   <!-- 文案输入区 -->
   <div v-else-if="/TEXT/.test(selectedMaterial)" id="text-input">
-    <input v-model="textVal" type="text" />
+    <!-- 文案 -->
+    <div>
+      <label for="textVal">{{ selectedMaterial }} Text:</label>
+      <input v-model="textVal" type="text" id="textVal" />
+    </div>
+    <!-- 字号 -->
+    <div>
+      <label for="textFontSize">{{ selectedMaterial }} FontSize:</label>
+      <input v-model="textFontSize" type="number" id="textFontSize" />
+    </div>
+    <!-- 字体 -->
+    <div>
+      <label for="textFontFamily">{{ selectedMaterial }} FontFamily:</label>
+      <select id="textFontFamily" @change="changeFont">
+        <option v-for="f in fonts" :key="f" :value="f" :selected="f === font">
+          {{ f }}
+        </option>
+      </select>
+    </div>
 
     <button @click="applyTextChange">apply</button>
   </div>
@@ -57,6 +75,7 @@ import { defineComponent, onMounted, watchEffect, reactive, ref } from "vue";
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import useColor from "../hooks/colors";
+import useFont from "../hooks/fonts";
 
 export default defineComponent({
   name: "Model",
@@ -68,6 +87,8 @@ export default defineComponent({
     const scene = new THREE.Scene();
     // 默认配色方案
     const [colors, color, changeColor] = useColor();
+    // 文字字体
+    const [fonts, font, changeFont] = useFont();
     // 支持自定义的衣服样式集合
     const pathIds = reactive([]);
     // 支持自定义的文字样式集合
@@ -75,7 +96,8 @@ export default defineComponent({
     // 已选中的素材 Id
     const selectedMaterial = ref("");
     // 文字样式的文案替换
-    const textVal = ref("MYTEAM");
+    const textVal = ref("MY TEAM");
+    const textFontSize = ref(60);
 
     // 渲染模型到场景中
     function renderModel() {
@@ -209,11 +231,26 @@ export default defineComponent({
 
         renderModel();
       }
+
+      // 切换到文字样式，设置输入框内的值
+      if (/TEXT/.test(selectedMaterial.value)) {
+        const el = document.getElementById(selectedMaterial.value);
+
+        textVal.value = el.innerHTML;
+        textFontSize.value = el.attributes["font-size"].value
+        font.value = el.attributes["font-family"].value
+      }
     });
 
     // 修改文字样式的文案
     const applyTextChange = () => {
-      document.getElementById(selectedMaterial.value).innerHTML = textVal.value;
+      const el = document.getElementById(selectedMaterial.value);
+      el.innerHTML = textVal.value;
+      el.style.fontSize = textFontSize.value;
+      el.style.fontFamily = font.value;
+
+      el.attributes["font-size"].value = textFontSize.value;
+      el.attributes["font-family"].value = font.value;
 
       renderModel();
     };
@@ -357,6 +394,10 @@ export default defineComponent({
       textIds,
       selectedMaterial,
       textVal,
+      textFontSize,
+      font,
+      fonts,
+      changeFont,
       applyTextChange,
     };
   },
@@ -380,6 +421,15 @@ export default defineComponent({
   width: 200px;
   display: flex;
   flex-wrap: wrap;
+}
+#text-input {
+  width: 240px;
+  flex-direction: column;
+  align-items: center;
+}
+#text-input div,
+#text-input button {
+  margin-top: 8px;
 }
 
 .color {

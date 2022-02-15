@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-export const colors: string[] = [
+const colors: string[] = [
   "rgb(255, 255, 255)",
   "rgb(255, 248, 241)",
   "rgb(233, 233, 225)",
